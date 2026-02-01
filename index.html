@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Indian Cuisine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav id="mainNavbar" class="navbar navbar-dark fixed-top">
+  <div class="container">
+    <span class="navbar-brand fw-bold">Indian Cuisine</span>
+    <button class="btn btn-light btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero-section text-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-7">
+        <h1 class="hero-title fw-bold">Indian Cuisine</h1>
+        <p class="lead">
+          100% Hygienic • Freshly Cooked • Authentic Bengali Taste
+        </p>
+
+        <div class="row mt-4">
+          <div class="col-4 col-sm-4 col-md-4 text-center">
+            <i class="bi bi-shield-check fs-1"></i>
+            <p class="mb-0">FSSAI Approved Hygiene</p>
+          </div>
+          <div class="col-4 col-sm-4 col-md-4 text-center">
+            <i class="bi bi-leaf fs-1"></i>
+            <p class="mb-0">100% Organic Veg & Non-Veg</p>
+          </div>
+          <div class="col-4 col-sm-4 col-md-4 text-center">
+            <i class="bi bi-heart-pulse fs-1"></i>
+            <p class="mb-0">Cooked with Love</p>
+          </div>
+        </div>
+
+        <p class="fst-italic mt-3">
+          “মায়ের হাতের রান্না, রেস্টুরেন্টের স্বাদ”
+        </p>
+
+        <div class="mt-4">
+          <a href="#ourMenu" class="btn btn-light btn-order">Order Now</a>
+        </div>
+
+        <div class="row mt-4 counter-row text-white">
+          <div class="col-4 text-center">
+            <div class="display-6 fw-bold"><span class="counter" data-target="5000">0</span>+</div>
+            <div class="small">Orders Served</div>
+          </div>
+          <div class="col-4 text-center">
+            <div class="display-6 fw-bold"><span class="counter" data-target="120">0</span>+</div>
+            <div class="small">Dishes</div>
+          </div>
+          <div class="col-4 text-center">
+            <div class="display-6 fw-bold"><span class="counter" data-target="10">0</span>+</div>
+            <div class="small">Years Experience</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5 d-none d-md-flex justify-content-end">
+        <div class="hero-image" aria-hidden="true" style="background-image: url('assets/images/6.png');"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= IMAGE SCROLL ================= -->
+<section class="container mt-5 pt-5">
+  <h5 class="text-center mb-3">Chef’s Specials</h5>
+  <div class="image-scroll">
+    <img src="assets/images/fish-1.png" alt="Fish special 1" loading="lazy">
+    <img src="assets/images/fish-2.png" alt="Fish special 2" loading="lazy">
+    <img src="assets/images/2.png" alt="Chef special 2" loading="lazy">
+    <img src="assets/images/3.png" alt="Chef special 3" loading="lazy">
+    <img src="assets/images/4.png" alt="Chef special 4" loading="lazy">
+    <img src="assets/images/5.png" alt="Chef special 5" loading="lazy">
+    <img src="assets/images/6.png" alt="Chef special 6" loading="lazy">
+    <img src="assets/images/meat-1.png" alt="Meat special" loading="lazy">
+  </div>
+</section>
+
+<!-- ================= MENU ================= -->
+<section id="ourMenu" class="container my-5">
+  <h3 class="text-center mb-4">Our Menu</h3>
+
+  <div class="text-center mb-4">
+    <button class="btn filter-btn active" data-filter="all">All</button>
+    <button class="btn filter-btn" data-filter="veg">Veg</button>
+    <button class="btn filter-btn" data-filter="nonveg">Non-Veg</button>
+    <button class="btn filter-btn" data-filter="sweet">Sweets</button>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-sm-6 col-lg-4 menu-item nonveg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/fish-1.png" alt="Prawn Curry">
+        <h6>Prawn Curry – $8</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Prawn Curry',8,this,'assets/images/fish-1.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/2.png" alt="Dal Tadka" loading="lazy">
+        <h6>Dal Tadka – $5</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Dal Tadka',5,this,'assets/images/2.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item sweet">
+      <div class="menu-card position-relative">
+        <img src="assets/images/3.png" alt="Jalebi" loading="lazy">
+        <h6>Jalebi – $5</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Jalebi',5,this,'assets/images/3.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/4.png" alt="Samosa" loading="lazy">
+        <h6>Samosa – $4</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Samosa',4,this,'assets/images/4.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item nonveg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/meat-1.png" alt="Lamb Rogan Josh">
+        <h6>Lamb Rogan Josh – $9</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Lamb Rogan Josh',9,this,'assets/images/meat-1.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/5.png" alt="Paneer Butter Masala">
+        <h6>Paneer Butter Masala – $7</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Paneer Butter Masala',7,this,'assets/images/5.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item nonveg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/fish-2.png" alt="Fish Fry">
+        <h6>Fish Fry – $7</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Fish Fry',7,this,'assets/images/fish-2.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/6.png" alt="Veg Biryani">
+        <h6>Veg Biryani – $6</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Veg Biryani',6,this,'assets/images/6.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item nonveg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/7.png" alt="Chicken Korma">
+        <h6>Chicken Korma – $8</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Chicken Korma',8,this,'assets/images/7.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/8.png" alt="Aloo Gobi">
+        <h6>Aloo Gobi – $5</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Aloo Gobi',5,this,'assets/images/8.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item sweet">
+      <div class="menu-card position-relative">
+        <img src="assets/images/9.png" alt="Rasgulla">
+        <h6>Rasgulla – $4</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Rasgulla',4,this,'assets/images/9.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item nonveg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/10.png" alt="Mutton Biryani">
+        <h6>Mutton Biryani – $10</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Mutton Biryani',10,this,'assets/images/10.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/11.png" alt="Chole Bhature">
+        <h6>Chole Bhature – $6</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Chole Bhature',6,this,'assets/images/11.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item sweet">
+      <div class="menu-card position-relative">
+        <img src="assets/images/12.png" alt="Gulab Jamun">
+        <h6>Gulab Jamun – $4</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Gulab Jamun',4,this,'assets/images/12.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item nonveg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/13.png" alt="Butter Chicken">
+        <h6>Butter Chicken – $9</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Butter Chicken',9,this,'assets/images/13.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/14.png" alt="Vegetable Pakora">
+        <h6>Vegetable Pakora – $4</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Vegetable Pakora',4,this,'assets/images/14.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item nonveg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/15.png" alt="Fish Kalia">
+        <h6>Fish Kalia – $8</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Fish Kalia',8,this,'assets/images/15.png')">Order</button>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-4 menu-item veg">
+      <div class="menu-card position-relative">
+        <img src="assets/images/2.png" alt="Mixed Veg Curry">
+        <h6>Mixed Veg Curry – $6</h6>
+        <button class="btn btn-danger btn-sm" onclick="addToCart('Mixed Veg Curry',6,this,'assets/images/2.png')">Order</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CART BUTTON ================= -->
+<button class="cart-btn">
+  <i class="bi bi-cart-fill"></i>
+  <span id="cartCount">0</span>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
+
