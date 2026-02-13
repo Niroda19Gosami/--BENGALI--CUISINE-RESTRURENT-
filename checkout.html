@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Checkout</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20260213h">
 </head>
 <body class="checkout-page">
 
@@ -17,14 +20,67 @@
   </div>
 </nav>
 
-<main class="container">
-  <h3 class="mb-4">Your Order</h3>
-  <div id="cartList"></div>
-  <div class="checkout-actions d-flex justify-content-between align-items-center mt-4">
-    <h5 id="total">Total: $0</h5>
-    <div>
-      <button id="placeOrder" class="btn btn-danger">Place Order</button>
-      <a href="index.html" class="btn btn-secondary ms-2">Continue Shopping</a>
+<main class="container checkout-main">
+  <h3 class="checkout-title mb-4">Your Order</h3>
+  <section class="checkout-card">
+    <ol id="cartList" class="checkout-order-list mb-0"></ol>
+    <div id="cartEmptyState" class="card p-4 text-center text-muted d-none">Your cart is empty.</div>
+  </section>
+
+  <template id="checkoutItemTemplate">
+    <li class="checkout-item">
+      <article class="checkout-item-card" data-product-card>
+        <div class="row g-2 g-sm-3 align-items-center">
+          <div class="col-12 col-lg-5">
+            <div class="checkout-item-identity d-flex align-items-center gap-2">
+              <img src="assets/images/Prawn%20Curry.png" class="checkout-thumb" alt="Product image" data-product-image>
+              <div class="checkout-item-text">
+                <div class="fw-semibold checkout-item-name" data-product-name>Product Name</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-2 checkout-meta-col">
+            <div class="checkout-detail-row" data-detail="price">
+              <span class="checkout-detail-label">Price</span>
+              <span class="checkout-detail-value" data-product-price>$0.00 each</span>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-3 checkout-qty-col">
+            <div class="checkout-detail-row checkout-qty-row">
+              <span class="checkout-detail-label">Quantity</span>
+              <div class="qty-controls d-flex align-items-center">
+                <button type="button" class="btn btn-sm btn-outline-light btn-qty" data-cart-action="decrease" aria-label="Decrease quantity"><i class="bi bi-dash-lg" aria-hidden="true"></i></button>
+                <div class="mx-2 text-white fw-bold qty-value" data-product-qty>1</div>
+                <button type="button" class="btn btn-sm btn-light btn-qty text-danger" data-cart-action="increase" aria-label="Increase quantity"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-2 checkout-summary-col">
+            <div class="checkout-summary d-flex flex-column">
+              <div class="checkout-detail-row" data-detail="subtotal">
+                <span class="checkout-detail-label">Subtotal</span>
+                <span class="checkout-detail-value fw-semibold" data-product-subtotal>$0.00</span>
+              </div>
+              <button type="button" class="btn btn-sm btn-link text-white text-decoration-none" data-cart-action="remove" aria-label="Remove item">Remove</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </li>
+  </template>
+
+  <div class="checkout-actions row g-3 align-items-center mt-4">
+    <div class="col-12 col-md-4">
+      <h5 id="total" class="checkout-total">Total: $0</h5>
+    </div>
+    <div class="col-12 col-md-8">
+      <div class="checkout-action-buttons d-flex flex-column flex-sm-row justify-content-md-end gap-2">
+        <button id="placeOrder" class="btn btn-danger">Place Order</button>
+        <a href="index.html" class="btn btn-secondary">Continue Shopping</a>
+      </div>
     </div>
   </div>
   </main>
@@ -32,6 +88,6 @@
   <footer class="page-footer mt-5"></footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/checkout.js"></script>
+  <script src="js/checkout.js?v=20260213j"></script>
 </body>
 </html>

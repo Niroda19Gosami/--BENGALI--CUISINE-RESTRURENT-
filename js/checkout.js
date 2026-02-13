@@ -4,120 +4,250 @@ function getCart() {
   return JSON.parse(localStorage.getItem('cart')) || [];
 }
 
+function getItemName(item) {
+  return String(item?.name || item?.title || item?.productName || '').trim();
+}
+
+function getItemPrice(item) {
+  const value = Number(item?.price ?? item?.unitPrice ?? item?.amount ?? 0);
+  return Number.isFinite(value) && value >= 0 ? value : 0;
+}
+
+function getItemQty(item) {
+  const value = Number(item?.qty ?? item?.quantity ?? 1);
+  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
+}
+
+function getItemImage(item) {
+  return item?.image || item?.img || item?.thumbnail || 'assets/images/Prawn%20Curry.png';
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildItemHtml(item, wrapWithListItem, itemIndex) {
+  const name = escapeHtml(item.name);
+  const image = escapeHtml(item.image);
+  const price = item.price.toFixed(2);
+  const qty = String(item.qty);
+  const subtotal = (item.price * item.qty).toFixed(2);
+  const index = Number.isInteger(itemIndex) && itemIndex >= 0 ? itemIndex : 0;
+
+  const openTag = wrapWithListItem ? '<li class="checkout-item">' : '<div class="checkout-item">';
+  const closeTag = wrapWithListItem ? '</li>' : '</div>';
+
+  return `${openTag}
+    <article class="checkout-item-card" data-product-card>
+      <div class="row g-2 g-sm-3 align-items-center">
+        <div class="col-12 col-lg-5">
+          <div class="checkout-item-identity d-flex align-items-center gap-2">
+            <img src="${image}" class="checkout-thumb" alt="${name} image" data-product-image>
+            <div class="checkout-item-text">
+              <div class="fw-semibold checkout-item-name" data-product-name>${name}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-2 checkout-meta-col">
+          <div class="checkout-detail-row" data-detail="price">
+            <span class="checkout-detail-label">Price</span>
+            <span class="checkout-detail-value" data-product-price>$${price} each</span>
+          </div>
+        </div>
+        <div class="col-12 col-lg-3 checkout-qty-col">
+          <div class="checkout-detail-row checkout-qty-row">
+            <span class="checkout-detail-label">Quantity</span>
+            <div class="qty-controls d-flex align-items-center">
+              <button type="button" class="btn btn-sm btn-outline-light btn-qty" data-cart-action="decrease" data-product-name="${name}" data-cart-index="${index}" aria-label="Decrease quantity"><i class="bi bi-dash-lg" aria-hidden="true"></i></button>
+              <div class="mx-2 text-white fw-bold qty-value" data-product-qty>${qty}</div>
+              <button type="button" class="btn btn-sm btn-light btn-qty text-danger" data-cart-action="increase" data-product-name="${name}" data-cart-index="${index}" aria-label="Increase quantity"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-2 checkout-summary-col">
+          <div class="checkout-summary d-flex flex-column">
+            <div class="checkout-detail-row" data-detail="subtotal">
+              <span class="checkout-detail-label">Subtotal</span>
+              <span class="checkout-detail-value fw-semibold" data-product-subtotal>$${subtotal}</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-link text-white text-decoration-none" data-cart-action="remove" data-product-name="${name}" data-cart-index="${index}" aria-label="Remove item">Remove</button>
+          </div>
+        </div>
+      </div>
+    </article>
+  ${closeTag}`;
+}
+
 function saveCart(cart) {
   localStorage.setItem('cart', JSON.stringify(cart));
-  // update any visible cartCount if present
   const el = document.getElementById('cartCount');
   if (el) {
-    el.innerText = cart.reduce((s,i) => s + i.qty, 0);
+    el.innerText = cart.reduce((sum, item) => sum + getItemQty(item), 0);
   }
 }
 
 function updateQty(name, delta) {
   const cart = getCart();
-  const idx = cart.findIndex(i => i.name === name);
+  const idx = cart.findIndex(item => getItemName(item) === name);
   if (idx === -1) return;
-  cart[idx].qty += delta;
-  if (cart[idx].qty <= 0) {
+
+  const nextQty = getItemQty(cart[idx]) + delta;
+  if (nextQty <= 0) {
     cart.splice(idx, 1);
+  } else {
+    cart[idx].qty = nextQty;
   }
+
   saveCart(cart);
   renderCart();
 }
 
 function removeItem(name) {
-  if (!confirm('Remove this item from your cart?')) return;
-  const cart = getCart().filter(i => i.name !== name);
+  const targetName = String(name || '').trim();
+  if (!targetName) return;
+
+  const cart = getCart();
+  const nextCart = [];
+  let removed = false;
+
+  cart.forEach(item => {
+    if (!removed && getItemName(item) === targetName) {
+      removed = true;
+      return;
+    }
+    nextCart.push(item);
+  });
+
+  if (!removed) return;
+  saveCart(nextCart);
+  renderCart();
+}
+
+function removeItemByIndex(index) {
+  const cart = getCart();
+  if (!Number.isInteger(index) || index < 0 || index >= cart.length) return;
+  cart.splice(index, 1);
   saveCart(cart);
   renderCart();
 }
 
+function initCheckoutNavbar() {
+  const nav = document.getElementById('mainNavbar');
+  if (!nav) return;
+
+  const syncNavbar = () => {
+    nav.classList.toggle('scrolled', window.scrollY > 8);
+  };
+
+  syncNavbar();
+  window.addEventListener('scroll', syncNavbar, { passive: true });
+}
+
 function renderCart() {
   const cart = getCart();
-  const list = document.getElementById('cartList');
-  list.innerHTML = '';
+  const cartList = document.getElementById('cartList');
+  const emptyState = document.getElementById('cartEmptyState');
+  const template = document.getElementById('checkoutItemTemplate');
+  const canUseTemplate = !!(template && template.content);
+  const wrapWithListItem = cartList.tagName.toLowerCase() === 'ol';
+
+  cartList.innerHTML = '';
 
   if (!cart.length) {
-    list.innerHTML = '<div class="card p-4 text-center text-muted">Your cart is empty.</div>';
+    emptyState.classList.remove('d-none');
+    cartList.classList.add('d-none');
     document.getElementById('total').innerText = 'Total: $0';
     document.getElementById('placeOrder').disabled = true;
     return;
   }
 
-  // create enhanced card container
-  const card = document.createElement('div');
-  card.className = 'checkout-card p-3';
+  emptyState.classList.add('d-none');
+  cartList.classList.remove('d-none');
 
-  cart.forEach(item => {
-    const row = document.createElement('div');
-    row.className = 'd-flex align-items-center justify-content-between mb-3 item-row';
+  const normalizedCart = [];
+  const htmlParts = [];
+  const fragment = canUseTemplate ? document.createDocumentFragment() : null;
 
-    const left = document.createElement('div');
-    left.innerHTML = `<div class="d-flex align-items-center"><img src="${item.image || 'assets/images/2.png'}" class="checkout-thumb me-3" alt=""><div><div class="fw-semibold">${item.name}</div><div class="text-muted">$${item.price} each</div></div></div>`;
+  cart.forEach((item, itemIndex) => {
+    const itemName = getItemName(item) || 'Item';
+    const itemPrice = getItemPrice(item);
+    const itemQty = getItemQty(item);
+    const itemImage = getItemImage(item);
+    const lineTotal = itemPrice * itemQty;
+    normalizedCart.push({ name: itemName, price: itemPrice, qty: itemQty, image: itemImage });
 
-    const center = document.createElement('div');
-    center.className = 'qty-controls d-flex align-items-center';
-    const minus = document.createElement('button');
-    minus.className = 'btn btn-sm btn-outline-light btn-qty';
-    minus.innerText = '−';
-    minus.title = 'Decrease';
-    minus.onclick = () => updateQty(item.name, -1);
+    if (canUseTemplate) {
+      const node = template.content.cloneNode(true);
 
-    const qty = document.createElement('div');
-    qty.className = 'mx-2 text-white fw-bold';
-    qty.style.minWidth = '28px';
-    qty.style.textAlign = 'center';
-    qty.innerText = item.qty;
-    qty.classList.add('qty-animate');
+      const img = node.querySelector('[data-product-image]');
+      img.src = itemImage;
+      img.alt = `${itemName} image`;
 
-    // remove animation class after it plays so subsequent changes re-trigger
-    setTimeout(() => qty.classList.remove('qty-animate'), 400);
+      const nameNode = node.querySelector('.checkout-item-name[data-product-name]');
+      const priceNode = node.querySelector('[data-detail="price"] [data-product-price]');
+      const qtyNode = node.querySelector('.qty-value[data-product-qty]');
+      const subtotalNode = node.querySelector('[data-detail="subtotal"] [data-product-subtotal]');
 
-    const plus = document.createElement('button');
-    plus.className = 'btn btn-sm btn-light btn-qty text-danger';
-    plus.innerText = '+';
-    plus.title = 'Increase';
-    plus.onclick = () => updateQty(item.name, 1);
+      if (nameNode) nameNode.textContent = itemName;
+      if (priceNode) priceNode.textContent = `$${itemPrice.toFixed(2)} each`;
+      if (qtyNode) qtyNode.textContent = String(itemQty);
+      if (subtotalNode) subtotalNode.textContent = `$${lineTotal.toFixed(2)}`;
 
-    center.appendChild(minus);
-    center.appendChild(qty);
-    center.appendChild(plus);
+      node.querySelectorAll('[data-cart-action]').forEach(btn => {
+        btn.dataset.productName = itemName;
+        btn.dataset.cartIndex = String(itemIndex);
+      });
 
-    const right = document.createElement('div');
-    right.className = 'text-end';
-    right.innerHTML = `<div class="fw-semibold">$${(item.price * item.qty).toFixed(2)}</div>`;
-    const rm = document.createElement('button');
-    rm.className = 'btn btn-sm btn-link text-white text-decoration-none';
-    rm.innerText = 'Remove';
-    rm.onclick = () => removeItem(item.name);
-    right.appendChild(rm);
-
-    row.appendChild(left);
-    row.appendChild(center);
-    row.appendChild(right);
-
-    card.appendChild(row);
+      fragment.appendChild(node);
+    } else {
+      htmlParts.push(buildItemHtml({ name: itemName, price: itemPrice, qty: itemQty, image: itemImage }, wrapWithListItem, itemIndex));
+    }
   });
 
-  list.appendChild(card);
+  if (canUseTemplate) {
+    cartList.appendChild(fragment);
+  } else {
+    cartList.innerHTML = htmlParts.join('');
+  }
 
-  const total = cart.reduce((s,i) => s + (i.price * i.qty), 0);
+  // final fail-safe in case template exists but nodes are malformed/stale in browser cache
+  if (!cartList.querySelector('[data-product-name]') || !cartList.querySelector('[data-product-qty]')) {
+    cartList.innerHTML = normalizedCart.map((item, itemIndex) => buildItemHtml(item, wrapWithListItem, itemIndex)).join('');
+  }
+
+  // keep stored cart shape stable so rendering/click handlers always map correctly
+  saveCart(normalizedCart);
+
+  const total = normalizedCart.reduce((sum, item) => sum + item.price * item.qty, 0);
   document.getElementById('total').innerText = 'Total: $' + total.toFixed(2);
   document.getElementById('placeOrder').disabled = false;
 }
 
 function placeOrder() {
-  const cart = getCart();
-  if (!cart.length) return alert('Cart is empty');
+  const rawCart = getCart();
+  if (!rawCart.length) return alert('Cart is empty');
+
+  const cart = rawCart.map(item => ({
+    name: getItemName(item) || 'Item',
+    price: getItemPrice(item),
+    qty: getItemQty(item),
+    image: getItemImage(item)
+  }));
 
   const orders = JSON.parse(localStorage.getItem('orders')) || [];
   const newOrder = {
     id: Date.now(),
     items: cart,
-    total: cart.reduce((s,i)=> s + (i.price * i.qty), 0),
+    total: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
     createdAt: new Date().toISOString(),
     status: 'pending'
   };
+
   orders.push(newOrder);
   localStorage.setItem('orders', JSON.stringify(orders));
   localStorage.removeItem('cart');
@@ -126,6 +256,45 @@ function placeOrder() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initCheckoutNavbar();
+
+  const cartList = document.getElementById('cartList');
+  const placeOrderBtn = document.getElementById('placeOrder');
+  if (!cartList || !placeOrderBtn) return;
+
+  cartList.addEventListener('click', event => {
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    if (!target) return;
+
+    const actionBtn = target.closest('[data-cart-action]');
+    if (!actionBtn) return;
+
+    const action = actionBtn.dataset.cartAction;
+    const index = Number(actionBtn.dataset.cartIndex);
+    const hasValidIndex = Number.isInteger(index) && index >= 0;
+
+    let name = String(actionBtn.dataset.productName || '').trim();
+    if (!name) {
+      const nameNode = actionBtn
+        .closest('.checkout-item-card')
+        ?.querySelector('.checkout-item-name[data-product-name]');
+      name = nameNode?.textContent?.trim() || '';
+    }
+
+    if (action === 'remove') {
+      if (hasValidIndex) {
+        removeItemByIndex(index);
+        return;
+      }
+      if (name) removeItem(name);
+      return;
+    }
+
+    if (!name) return;
+    if (action === 'decrease') updateQty(name, -1);
+    if (action === 'increase') updateQty(name, 1);
+  });
+
   renderCart();
-  document.getElementById('placeOrder').addEventListener('click', placeOrder);
+  placeOrderBtn.addEventListener('click', placeOrder);
 });
