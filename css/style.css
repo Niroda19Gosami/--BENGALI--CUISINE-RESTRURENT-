@@ -1183,8 +1183,22 @@ small,
     min-height: 50px;
   }
 
+  .checkout-qty-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    row-gap: 6px;
+    column-gap: 8px;
+  }
+
   .checkout-qty-row .checkout-detail-label {
-    min-width: 68px;
+    flex: 0 0 100%;
+    min-width: 0;
+    margin-right: 0;
+  }
+
+  .checkout-qty-row .qty-controls {
+    margin-left: 0;
+    flex: 0 0 auto;
   }
 
   .checkout-summary {
